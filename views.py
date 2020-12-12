@@ -18,14 +18,16 @@ def about_view(request):
 
 def contact_view(request):
     """Контроллер страницы Контакты"""
-    # Проверяем метода запроса
+    # Проверяем метод запроса
     if request['method'] == 'POST':
         data = request['data']
         title = data['title']
         text = data['text']
         email = data['email']
-        print(
-            f'Нам пришло сообщение от {email} с темой {title} и текстом {text}')
+        message = f'Нам пришло сообщение от {email} с темой {title} и текстом {text}'
+        print(message)
+    else:
+        message = ""
 
     # В любом случае выводим страницу контактов
-    return '200 OK', render('contact.html')
+    return '200 OK', render('contact.html', message=message)
