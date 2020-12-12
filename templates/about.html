@@ -1,13 +1,14 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>О нас</title>
-</head>
-<body>
+{% extends "base.html" %}
+
+{% block title %}
+    О нас
+{% endblock %}
+
+{% block main %}
     <h1>Информация о нас</h1>
-    <h2>CRAFT SKILLS - лучшая площадка для обучения программированию</h2>
+    <h2>CRAFT SKILLS - лучшая площадка для обучения программированию!</h2>
     <h3>secret: {{secret}}</h3>
-    <p><a href="/">На главную</a></p>
-</body>
-</html>
+
+    {% include 'nav.html' %}
+
+{% endblock %}

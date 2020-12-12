@@ -1,16 +1,16 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>CRAFT SKILLS</title>
-</head>
-<body>
+{% extends "base.html" %}
+
+{% block title %}
+    CRAFT SKILLS
+{% endblock %}
+
+{% block main %}
+
     <h1>CRAFT SKILLS</h1>
     <h2>Обучение программированию</h2>
 
-    <p><a href="/about/">О нас</a></p>
-    <p><a href="/contact/">Контакты</a></p>
+    {% include 'nav.html' %}
 
     <h3>secret: {{secret}}</h3>
-</body>
-</html>
+
+{% endblock %}
