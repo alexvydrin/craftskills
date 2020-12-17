@@ -1,4 +1,8 @@
-"""Шаблонизатор фреймворка"""
+"""
+Шаблонизатор фреймворка
+Работа с шаблонами, паттерн INTERFACE
+Используем шаблонизатор jinja2
+"""
 # import os
 # from jinja2 import Template
 from jinja2 import FileSystemLoader

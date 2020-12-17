@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}
+Список курсов
+{% endblock %}
+{% block body %}
+{% include "inc-menu.html" %}
+<h1>Список категорий</h1>
+<ul>
+
+    {% for item in objects_list %}
+    <li>
+        {{item.name}} <span>Количество курсов: {{item.course_count()}}</span>
+    </li>
+    {% endfor %}
+</ul>
+{% endblock %}

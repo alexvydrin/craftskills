@@ -1,16 +1,16 @@
 """Основной модуль фреймворка storm"""
 
 
-class Application:  # pylint: disable=too-few-public-methods
+class Application:
     """Основной класс фреймворка storm"""
 
-    def __init__(self, urlpatterns: dict, front_controllers: list):
-        """
-        :param urlpatterns: словарь связок url: view
-        :param front_controllers: список front controllers
-        """
-        self.urlpatterns = urlpatterns
-        self.front_controllers = front_controllers
+    def add_route(self, url):
+        """паттерн декоратор"""
+
+        def inner(view):
+            self.urlpatterns[url] = view
+
+        return inner
 
     @staticmethod
     def parse_input_data(data: str):
@@ -61,6 +61,14 @@ class Application:  # pylint: disable=too-few-public-methods
             data = env['wsgi.input'].read(content_length)
 
         return data
+
+    def __init__(self, urlpatterns: dict, front_controllers: list):
+        """
+        :param urlpatterns: словарь связок url: view
+        :param front_controllers: список front controllers
+        """
+        self.urlpatterns = urlpatterns
+        self.front_controllers = front_controllers
 
     def __call__(self, env, start_response):
         """
@@ -116,3 +124,26 @@ class Application:  # pylint: disable=too-few-public-methods
         # Если url нет в urlpatterns - то страница не найдена
         start_response('404 NOT FOUND', [('Content-Type', 'text/html')])
         return [b"Not Found"]
+
+
+class DebugApplication(Application):
+    """отладка"""
+    def __init__(self, urlpatterns, front_controllers):
+        self.application = Application(urlpatterns, front_controllers)
+        super().__init__(urlpatterns, front_controllers)
+
+    def __call__(self, env, start_response):
+        print('DEBUG MODE')
+        print(env)
+        return self.application(env, start_response)
+
+
+class MockApplication(Application):
+    """mock"""
+    def __init__(self, urlpatterns, front_controllers):
+        self.application = Application(urlpatterns, front_controllers)
+        super().__init__(urlpatterns, front_controllers)
+
+    def __call__(self, env, start_response):
+        start_response('200 OK', [('Content-Type', 'text/html')])
+        return [b'Hello from Mock']
