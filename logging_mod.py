@@ -3,10 +3,10 @@ import time
 from reusepatterns.singletones import SingletonByName
 
 
-# Заметка, можно применить стратегию если добавить стратегию логирования
 class Logger(metaclass=SingletonByName):  # pylint: disable=too-few-public-methods
-    """логгер"""
-
+    """
+    Логгер
+    """
     def __init__(self, name):
         self.name = name
 
@@ -17,7 +17,11 @@ class Logger(metaclass=SingletonByName):  # pylint: disable=too-few-public-metho
 
 
 def debug(func):
-    """декоратор"""
+    """
+    декоратор для view,
+    при использовании декоратора над/перед view:
+    в терминал выводятся название функции и время ее выполнения
+    """
     def inner(*args, **kwargs):
         start = time.time()
         result = func(*args, **kwargs)

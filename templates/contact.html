@@ -4,7 +4,7 @@
     Контакты
 {% endblock %}
 
-{% block main %}
+{% block body %}
     <h1>Отправить нам сообщение</h1>
     <form method="post">
         <input type="text" name="title" placeholder="Заголовок">
@@ -12,8 +12,11 @@
         <input type="email" name="email" placeholder="email">
 		<button type="submit">Отправить</button>
     </form>
-     <h3>Отправленное сообщение: {{message}}</h3>
 
-    {% include 'nav.html' %}
+    <hr>
+    <h3>Отправленное сообщение: {{message}}</h3>
+
+    <hr>
+    {% include "inc-menu.html" %}
 
 {% endblock %}

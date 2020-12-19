@@ -20,10 +20,11 @@ class Student(User):  # pylint: disable=too-few-public-methods
     # pass
 
 
-class SimpleFactory:  # pylint: disable=too-few-public-methods
-    """Фабричный метод"""
-    def __init__(self, types=None):
-        self.types = types or {}
+# не используется
+# class SimpleFactory:  # pylint: disable=too-few-public-methods
+#     """Фабричный метод"""
+#     def __init__(self, types=None):
+#         self.types = types or {}
 
 
 class UserFactory:  # pylint: disable=too-few-public-methods
@@ -35,45 +36,56 @@ class UserFactory:  # pylint: disable=too-few-public-methods
 
     @classmethod
     def create(cls, type_):
-        """создание"""
+        """создание user типа types[type_] -> Student, Teacher"""
         return cls.types[type_]()
 
 
 class Category:  # pylint: disable=too-few-public-methods
-    """реестр?"""
+    """Категории курсов"""
     auto_id = 0
 
     def __init__(self, name, category):
-        self.id = Category.auto_id
-        Category.auto_id += 1
+        """инициализация категории"""
+        self.id = Category.auto_id  # pylint: disable=invalid-name
+        Category.auto_id += 1  # автонумерация
         self.name = name
-        self.category = category
-        self.courses = []
+        self.category = category  # если эта категория вложена в другую категорию
+        self.courses = []  # список курсов этой категории
 
     def course_count(self):
+        """считаем сколько курсов содержит категория"""
         result = len(self.courses)
+
+        # тут пока не могу понять логику расчета
         if self.category:
             result += self.category.course_count()
         return result
 
 
 class Course(PrototypeMixin):  # pylint: disable=too-few-public-methods
+    """
+    курс
+    реализован паттерн прототип - для копирования курса
+    """
 
     def __init__(self, name, category):
         self.name = name
-        self.category = category
+        self.category = category  # какой категории принадлежит курс
         self.category.courses.append(self)
 
 
 class InteractiveCourse(Course):  # pylint: disable=too-few-public-methods
-    pass
+    """Интерактивный курс"""
+    # pass
 
 
 class RecordCourse(Course):  # pylint: disable=too-few-public-methods
-    pass
+    """Видеокурс"""
+    # pass
 
 
 class CourseFactory:  # pylint: disable=too-few-public-methods
+    """Фабрика курсов"""
     types = {
         'interactive': InteractiveCourse,
         'record': RecordCourse
@@ -81,28 +93,33 @@ class CourseFactory:  # pylint: disable=too-few-public-methods
 
     @classmethod
     def create(cls, type_, name, category):
+        """создание нового курса"""
         return cls.types[type_](name, category)
 
 
 class TrainingSite:
-    # Интерфейс
+    """Интерфейс сайта"""
+
     def __init__(self):
-        self.teachers = []
-        self.students = []
-        self.courses = []
-        self.categories = []
+        self.teachers = []  # преподаватели
+        self.students = []  # студенты
+        self.courses = []  # курсы
+        self.categories = []  # категории курсов
 
     @staticmethod
     def create_user(type_):
+        """создание нового пользователя"""
         return UserFactory.create(type_)
 
     @staticmethod
     def create_category(name, category=None):
+        """создание новой категории курсов"""
         return Category(name, category)
 
     def find_category_by_id(self, id_):
+        """поиск категории по ее номеру (id)"""
         for item in self.categories:
-            print('item', item.id)
+            # print('item', item.id)
             if item.id == id_:
                 return item
         raise Exception(f'Нет категории с id = {id_}')
@@ -116,9 +133,11 @@ class TrainingSite:
 
     @staticmethod
     def create_course(type_, name, category):
+        """Создание нового курса"""
         return CourseFactory.create(type_, name, category)
 
     def get_course(self, name):  # -> Course
+        """поиск курса по его имени"""
         for item in self.courses:
             if item.name == name:
                 return item
