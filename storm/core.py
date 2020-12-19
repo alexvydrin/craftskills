@@ -5,7 +5,10 @@ class Application:
     """Основной класс фреймворка storm"""
 
     def add_route(self, url):
-        """паттерн декоратор"""
+        """
+        реализация паттерна Декоратор
+        добавление связки url - view в приложение
+        """
 
         def inner(view):
             self.urlpatterns[url] = view
@@ -127,7 +130,12 @@ class Application:
 
 
 class DebugApplication(Application):
-    """отладка"""
+    """
+    логирующий wsgi-application
+    такой же как основной, только он для каждого запроса выводит информацию:
+    тип запроса и параметры в консоль.
+    """
+
     def __init__(self, urlpatterns, front_controllers):
         self.application = Application(urlpatterns, front_controllers)
         super().__init__(urlpatterns, front_controllers)
@@ -139,11 +147,15 @@ class DebugApplication(Application):
 
 
 class MockApplication(Application):
-    """mock"""
+    """
+    фейковый wsgi-application
+    на все запросы пользователя отвечает одинаково
+    """
+
     def __init__(self, urlpatterns, front_controllers):
         self.application = Application(urlpatterns, front_controllers)
         super().__init__(urlpatterns, front_controllers)
 
     def __call__(self, env, start_response):
         start_response('200 OK', [('Content-Type', 'text/html')])
-        return [b'Hello from Mock']
+        return [b'Hello from Fake']

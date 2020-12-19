@@ -1,8 +1,11 @@
-"""паттерн Singleton"""
+"""
+Реализация порождающего патерна
+паттерн Одиночка
+"""
 
 
 class SingletonByName(type):
-    """синглтон"""
+    """Одиночка или синглтон"""
 
     def __init__(cls, name, bases, attrs):  # **kwargs
         super().__init__(name, bases, attrs)

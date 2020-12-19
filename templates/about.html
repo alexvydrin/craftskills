@@ -4,11 +4,13 @@
     О нас
 {% endblock %}
 
-{% block main %}
+{% block body %}
     <h1>Информация о нас</h1>
+    <hr>
     <h2>CRAFT SKILLS - лучшая площадка для обучения программированию!</h2>
-    <h3>secret: {{secret}}</h3>
+    <!--    <h3>secret: __secret}}</h3> -->
 
-    {% include 'nav.html' %}
+    <hr>
+    {% include "inc-menu.html" %}
 
 {% endblock %}
