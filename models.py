@@ -1,5 +1,7 @@
 """Модели"""
+import jsonpickle
 from reusepatterns.prototypes import PrototypeMixin
+from reusepatterns.observer import Subject, Observer
 
 
 class User:  # pylint: disable=too-few-public-methods
@@ -7,7 +9,9 @@ class User:  # pylint: disable=too-few-public-methods
     пользователи системы
     это могут быть преподаватели, студенты
     """
-    # pass
+
+    def __init__(self, name):
+        self.name = name
 
 
 class Teacher(User):  # pylint: disable=too-few-public-methods
@@ -17,14 +21,10 @@ class Teacher(User):  # pylint: disable=too-few-public-methods
 
 class Student(User):  # pylint: disable=too-few-public-methods
     """студенты"""
-    # pass
 
-
-# не используется
-# class SimpleFactory:  # pylint: disable=too-few-public-methods
-#     """Фабричный метод"""
-#     def __init__(self, types=None):
-#         self.types = types or {}
+    def __init__(self, name):
+        self.courses = []
+        super().__init__(name)
 
 
 class UserFactory:  # pylint: disable=too-few-public-methods
@@ -35,9 +35,9 @@ class UserFactory:  # pylint: disable=too-few-public-methods
     }
 
     @classmethod
-    def create(cls, type_):
+    def create(cls, type_, name):
         """создание user типа types[type_] -> Student, Teacher"""
-        return cls.types[type_]()
+        return cls.types[type_](name)
 
 
 class Category:  # pylint: disable=too-few-public-methods
@@ -52,17 +52,21 @@ class Category:  # pylint: disable=too-few-public-methods
         self.category = category  # если эта категория вложена в другую категорию
         self.courses = []  # список курсов этой категории
 
+    def __getitem__(self, item):
+        """получить конкретный курс по номеру"""
+        return self.courses[item]
+
     def course_count(self):
         """считаем сколько курсов содержит категория"""
         result = len(self.courses)
 
-        # тут пока не могу понять логику расчета
+        # тут логика расчета неверная - потом можно переписать правильно
         if self.category:
             result += self.category.course_count()
         return result
 
 
-class Course(PrototypeMixin):  # pylint: disable=too-few-public-methods
+class Course(PrototypeMixin, Subject):
     """
     курс
     реализован паттерн прототип - для копирования курса
@@ -72,6 +76,58 @@ class Course(PrototypeMixin):  # pylint: disable=too-few-public-methods
         self.name = name
         self.category = category  # какой категории принадлежит курс
         self.category.courses.append(self)
+        self.students = []  # список студентов на курсе
+        super().__init__()
+
+    def __getitem__(self, item):
+        """получить конкретного студента по номеру"""
+        return self.students[item]
+
+    def add_student(self, student: Student):
+        """добавить студента на курс"""
+        self.students.append(student)
+        student.courses.append(self)  # а студенту добавим этот курс
+        self.notify()  # уведомляем всех студентов об изменении
+
+
+class SmsNotifier(Observer):  # pylint: disable=too-few-public-methods
+    """Уведомления по СМС"""
+
+    # @staticmethod
+    def update(self, subject):
+        """
+        сообщаем про присоединение нового студента
+        subject: Course
+        """
+        print('SMS->', 'к нам присоединился', subject.students[-1].name)
+
+
+class EmailNotifier(Observer):  # pylint: disable=too-few-public-methods
+    """Уведомления по электронной почте"""
+
+    # @staticmethod
+    def update(self, subject):
+        """
+        сообщаем про присоединение нового студента
+        subject: Course
+        """
+        print(('EMAIL->', 'к нам присоединился', subject.students[-1].name))
+
+
+class BaseSerializer:
+    """базовый класс для сериализации данных"""
+
+    def __init__(self, obj):
+        self.obj = obj  # объект для сериализации
+
+    def save(self):
+        """сохранение данных объекта в дамп"""
+        return jsonpickle.dumps(self.obj)
+
+    @staticmethod
+    def load(data):
+        """загрузка данных объекта из дампа"""
+        return jsonpickle.loads(data)
 
 
 class InteractiveCourse(Course):  # pylint: disable=too-few-public-methods
@@ -107,9 +163,9 @@ class TrainingSite:
         self.categories = []  # категории курсов
 
     @staticmethod
-    def create_user(type_):
+    def create_user(type_, name):
         """создание нового пользователя"""
-        return UserFactory.create(type_)
+        return UserFactory.create(type_, name)
 
     @staticmethod
     def create_category(name, category=None):
@@ -139,6 +195,13 @@ class TrainingSite:
     def get_course(self, name):  # -> Course
         """поиск курса по его имени"""
         for item in self.courses:
+            if item.name == name:
+                return item
+        return None
+
+    def get_student(self, name):  # -> Student
+        """поиск студента по его наименованию"""
+        for item in self.students:
             if item.name == name:
                 return item
         return None
