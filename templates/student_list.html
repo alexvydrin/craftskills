@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block title %}
+    Список студентов
+{% endblock %}
+
+{% block body %}
+    {% include "inc-menu.html" %}
+    <h1>Список студентов</h1>
+    <ul>
+
+        {% for item in objects_list %}
+        <li>
+            {{item.name}}
+            (Курсы студента:
+            {% for course in item.courses %}
+                {{course.name}}
+            {% endfor %}
+            )
+        </li>
+        {% endfor %}
+    </ul>
+{% endblock %}

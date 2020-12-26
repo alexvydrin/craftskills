@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block title %}
+    Создание записи о студенте
+{% endblock %}
+
+{% block body %}
+    {% include "inc-menu.html" %}
+    <h1>Создание записи о студенте</h1>
+    <form method="post">
+        <input type="text" name="name" placeholder="Имя">
+        <button type="submit">Сохранить</button>
+    </form>
+{% endblock %}
