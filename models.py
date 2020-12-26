@@ -2,6 +2,7 @@
 import jsonpickle
 from reusepatterns.prototypes import PrototypeMixin
 from reusepatterns.observer import Subject, Observer
+from storm_orm import DomainObject
 
 
 class User:  # pylint: disable=too-few-public-methods
@@ -19,7 +20,7 @@ class Teacher(User):  # pylint: disable=too-few-public-methods
     # pass
 
 
-class Student(User):  # pylint: disable=too-few-public-methods
+class Student(User, DomainObject):  # pylint: disable=too-few-public-methods
     """студенты"""
 
     def __init__(self, name):

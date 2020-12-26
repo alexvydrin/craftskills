@@ -8,30 +8,22 @@ from models import TrainingSite, EmailNotifier, SmsNotifier, BaseSerializer
 from logging_mod import Logger, debug
 from storm import Application, render  # , DebugApplication, MockApplication
 from storm.storm_cbv import ListView, CreateView
+from storm_orm import UnitOfWork
+from mappers import MapperRegistry
+
 
 site = TrainingSite()
 logger = Logger('main')
 email_notifier = EmailNotifier()
 sms_notifier = SmsNotifier()
+UnitOfWork.new_current()
+UnitOfWork.get_current().set_mapper_registry(MapperRegistry)
 
 ##########################################################################
 # Первоначальные данные - пока нет БД для отладки
-category_1 = site.create_category("Порождающие паттерны")
+category_1 = site.create_category("Patterns 1")
 site.categories.append(category_1)
-site.courses.append(
-    site.create_course(
-        'record',
-        "Абстрактная фабрика",
-        category_1))
-site.courses.append(
-    site.create_course(
-        'record',
-        "Фабричный метод",
-        category_1))
-site.courses.append(site.create_course('record', "Строитель", category_1))
-site.courses.append(site.create_course('record', "Одиночка", category_1))
-site.courses.append(site.create_course('record', "Прототип", category_1))
-category_2 = site.create_category("Структурные паттерны")
+category_2 = site.create_category("Patterns 2")
 site.categories.append(category_2)
 site.courses.append(site.create_course('record', "Adapter", category_2))
 site.courses.append(site.create_course('record', "Bridge", category_2))
@@ -66,10 +58,13 @@ site.courses.append(
 site.courses.append(site.create_course('record', "Course_AAA_1", category_AAA))
 site.courses.append(site.create_course('record', "Course_AAA_2", category_AAA))
 site.courses.append(site.create_course('record', "Course_AAA_3", category_AAA))
-# Студенты
-site.students.append(site.create_user('student', "Ivanov"))
-site.students.append(site.create_user('student', "Petrov"))
 
+# Студенты - перенесено в БД
+# site.students.append(site.create_user('student', "Ivanov"))
+# site.students.append(site.create_user('student', "Petrov"))
+for student in MapperRegistry.get_current_mapper('student').all():
+    # print(student.name)
+    site.students.append(site.create_user('student', student.name))
 
 ##########################################################################
 
@@ -79,7 +74,7 @@ site.students.append(site.create_user('student', "Petrov"))
 def main_view(request):
     """Контроллер главной страницы сайта"""
     secret = request.get('secret_key', None)
-    logger.log('Список курсов')
+    logger.log('Главная страница')
     # Используем шаблонизатор
     return '200 OK', render('index.html',
                             secret=secret, objects_list=site.courses)
@@ -187,6 +182,10 @@ class StudentListView(ListView):
     queryset = site.students
     template_name = 'student_list.html'
 
+    # def get_queryset(self):
+    #    mapper = MapperRegistry.get_current_mapper('student')
+    #    return mapper.all()
+
 
 class StudentCreateView(CreateView):
     """Создание нововго студента"""
@@ -196,7 +195,8 @@ class StudentCreateView(CreateView):
         name = data['name']
         new_obj = site.create_user('student', name)
         site.students.append(new_obj)
-
+        new_obj.mark_new()
+        UnitOfWork.get_current().commit()
 
 class AddStudentByCourseCreateView(CreateView):
     """Добавление студента на курс"""
@@ -213,8 +213,11 @@ class AddStudentByCourseCreateView(CreateView):
         course = site.get_course(course_name)
         student_name = data['student_name']
         student = site.get_student(student_name)
-        course.add_student(student)
 
+        print("course: ", course.name)
+        print("student: ", student.name)
+
+        course.add_student(student)
 
 ##########################################################################
 
