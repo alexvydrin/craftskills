@@ -48,6 +48,9 @@ class Category:  # pylint: disable=too-few-public-methods
     def __init__(self, name, category):
         """инициализация категории"""
         self.id = Category.auto_id  # pylint: disable=invalid-name
+
+        # print('Category.id=', self.id, name)
+
         Category.auto_id += 1  # автонумерация
         self.name = name
         self.category = category  # если эта категория вложена в другую категорию
@@ -76,6 +79,11 @@ class Course(PrototypeMixin, Subject):
     def __init__(self, name, category):
         self.name = name
         self.category = category  # какой категории принадлежит курс
+
+        # print("category=", category)
+
+        # print("=",category.name)
+
         self.category.courses.append(self)
         self.students = []  # список студентов на курсе
         super().__init__()
@@ -176,7 +184,10 @@ class TrainingSite:
     def find_category_by_id(self, id_):
         """поиск категории по ее номеру (id)"""
         for item in self.categories:
+
             # print('item', item.id)
+            # print('name', item.name)
+
             if item.id == id_:
                 return item
         raise Exception(f'Нет категории с id = {id_}')

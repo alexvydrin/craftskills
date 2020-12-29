@@ -93,7 +93,7 @@ class CategoryMapper:
         self.cursor.execute(statement)
         result = []
         for item in self.cursor.fetchall():
-            id, name, category = item
+            id, category, name = item
             category_ = Category(name, category)
             category_.id = id
             result.append(category_)
@@ -146,7 +146,7 @@ class CourseMapper:
         self.cursor.execute(statement)
         result = []
         for item in self.cursor.fetchall():
-            id, name, category = item
+            id, category, name = item
             course = Course(name, category)
             course.id = id
             result.append(course)
