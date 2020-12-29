@@ -21,50 +21,66 @@ UnitOfWork.get_current().set_mapper_registry(MapperRegistry)
 
 ##########################################################################
 # Первоначальные данные - пока нет БД для отладки
-category_1 = site.create_category("Patterns 1")
-site.categories.append(category_1)
-category_2 = site.create_category("Patterns 2")
-site.categories.append(category_2)
-site.courses.append(site.create_course('record', "Adapter", category_2))
-site.courses.append(site.create_course('record', "Bridge", category_2))
-site.courses.append(site.create_course('record', "Composite", category_2))
-site.courses.append(site.create_course('record', "Decorator", category_2))
-site.courses.append(site.create_course('record', "Facade", category_2))
-site.courses.append(site.create_course('record', "Proxy", category_2))
-# Тестируем вложенные курсы и подсчет количества курсов
-category_AAA = site.create_category("Category_AAA")
-site.categories.append(category_AAA)
-category_BBB = site.create_category("Category_BBB")
-site.categories.append(category_BBB)
-category_AAA_1 = site.create_category("Category_AAA_1", category_AAA)
-site.categories.append(category_AAA_1)
-category_AAA_2 = site.create_category("Category_AAA_2", category_AAA)
-site.categories.append(category_AAA_2)
-site.courses.append(
-    site.create_course(
-        'record',
-        "Course_AAA_1_1",
-        category_AAA_1))
-site.courses.append(
-    site.create_course(
-        'record',
-        "Course_AAA_1_2",
-        category_AAA_1))
-site.courses.append(
-    site.create_course(
-        'record',
-        "Course_AAA_2_1",
-        category_AAA_2))
-site.courses.append(site.create_course('record', "Course_AAA_1", category_AAA))
-site.courses.append(site.create_course('record', "Course_AAA_2", category_AAA))
-site.courses.append(site.create_course('record', "Course_AAA_3", category_AAA))
 
-# Студенты - перенесено в БД
-# site.students.append(site.create_user('student', "Ivanov"))
-# site.students.append(site.create_user('student', "Petrov"))
+# Студенты
 for student in MapperRegistry.get_current_mapper('student').all():
     # print(student.name)
     site.students.append(site.create_user('student', student.name))
+
+# Категории
+for category in MapperRegistry.get_current_mapper('category').all():
+    # print("category.name=", category.name)
+    site.categories.append(site.create_category(category.name, None))
+    pass
+
+_category = site.find_category_by_id(1*2)
+
+# category_1 = site.create_category("Patterns")
+# site.categories.append(category_1)
+# category_2 = site.create_category("Patterns 2")
+# site.categories.append(category_2)
+site.courses.append(site.create_course('record', "Adapter", _category))
+site.courses.append(site.create_course('record', "Bridge", _category))
+site.courses.append(site.create_course('record', "Composite", _category))
+site.courses.append(site.create_course('record', "Decorator", _category))
+site.courses.append(site.create_course('record', "Facade", _category))
+site.courses.append(site.create_course('record', "Proxy", _category))
+# # Тестируем вложенные курсы и подсчет количества курсов
+# category_AAA = site.create_category("Category_AAA")
+# site.categories.append(category_AAA)
+# category_BBB = site.create_category("Category_BBB")
+# site.categories.append(category_BBB)
+# category_AAA_1 = site.create_category("Category_AAA_1", category_AAA)
+# site.categories.append(category_AAA_1)
+# category_AAA_2 = site.create_category("Category_AAA_2", category_AAA)
+# site.categories.append(category_AAA_2)
+# site.courses.append(
+#     site.create_course(
+#         'record',
+#         "Course_AAA_1_1",
+#         category_AAA_1))
+# site.courses.append(
+#     site.create_course(
+#         'record',
+#         "Course_AAA_1_2",
+#         category_AAA_1))
+# site.courses.append(
+#     site.create_course(
+#         'record',
+#         "Course_AAA_2_1",
+#         category_AAA_2))
+# site.courses.append(site.create_course('record', "Course_AAA_1", category_AAA))
+# site.courses.append(site.create_course('record', "Course_AAA_2", category_AAA))
+# site.courses.append(site.create_course('record', "Course_AAA_3", category_AAA))
+
+
+# Курсы
+# _category = site.find_category_by_id(1)
+
+#for course in MapperRegistry.get_current_mapper('course').all():
+#    print("course.name=", course.name)
+    # site.courses.append(site.create_course(course.name, _category))
+
 
 ##########################################################################
 
